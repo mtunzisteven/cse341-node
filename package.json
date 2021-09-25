@@ -1,0 +1,27 @@
+{
+  "name": "section02",
+  "version": "1.0.0",
+  "description": "cse341 course week 2",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.13"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mtunzisteven/cse341-node.git"
+  },
+  "author": "Mtunzi Mavuma",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mtunzisteven/cse341-node/issues"
+  },
+  "homepage": "https://github.com/mtunzisteven/cse341-node#readme"
+}

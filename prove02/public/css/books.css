@@ -1,0 +1,47 @@
+.book-form {
+    width: 20rem;
+    max-width: 90%;
+    margin: auto;
+}
+
+.del-btn{
+    border: #882704 1px solid;
+    border-radius: 3px;
+    color: #882704;
+    display:block;
+    margin: 5px auto 15px auto;
+}
+
+.del-btn:hover{
+    background-color: #882704;
+}
+
+.book_rating{
+    display:block;
+    margin:5px auto;
+    text-align: center;
+}
+
+.book_rating_star{
+    color:orange;
+}
+
+.book-item {
+    width: 20rem;
+    max-width: 95%;
+}
+
+.book__title {
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.book__price {
+    text-align: center;
+    color: #4d4d4d;
+    margin-bottom: 0.5rem;
+}
+
+.book__description {
+    text-align: center;
+}
