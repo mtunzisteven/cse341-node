@@ -1,36 +1,35 @@
+// Here we register our pages from the views folder 
+// Our perspective is from the routes folder: "/...""
+// we get our actual redirections and paths in the admin controller
+
 const path = require('path');
 
 const express = require('express');
 
-const rootDir = require('../util/path');
+const adminController = require('../controllers/admin');
 
 const router = express.Router();
 
-const books = [];
+////////////////////////////////////////////////////////
+//  path is the one used to access ejs on link href.  //
+////////////////////////////////////////////////////////
 
 // /admin/add-product => GET
-router.get('/add-product', (req, res, next) => {
-  res.render('add-product', {
-    pageTitle: 'Add Product',
-    path: '/admin/add-product',
-    formsCSS: true,
-    booksCSS: true,
-    activeAddProduct: true
-  });
-});
+router.get('/add-product', adminController.getAddProduct);
 
 // /admin/add-product => POST
-router.post('/add-product', (req, res, next) => {
-  books.push({ title: req.body.title, price: req.body.price, description: req.body.description, rating: req.body.rating});
-  res.redirect('/');
-});
+router.post('/add-product', adminController.postProduct);
 
-// /admin/delete-product => POST
-router.post('/delete-product', (req, res, next) => {
-  let index = req.body.index; // set index using the index value received from the delete form
-  books.splice(index, 1);  // remove the product by index.
-  res.redirect('/');
-});
+// /admin/products => GET
+router.get('/admin-products', adminController.getAdminProducts);
 
-exports.routes = router;
-exports.books = books;
+// /admin/edit-products => GET
+router.get('/edit-product/:productId', adminController.getEditProduct);
+
+// /admin/delete-products => POST 
+router.post('/delete-product', adminController.postDeleteProduct);
+
+// /admin/edit-products => POST
+router.post('/edit-product', adminController.postEditProduct);
+
+module.exports = router;
