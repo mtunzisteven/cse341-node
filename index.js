@@ -51,7 +51,7 @@ const options = {
 
 const MONGODB_URL = process.env.MONGODB_URL || "mongodb+srv://mtunzi:MongoDBJune2021.@firstcluster21.ik5m1.mongodb.net/shop?retryWrites=true&w=majority";
                
-const PORT = process.env.PORT || 3000;
+// const PORT = process.env.PORT || 3000;
 
 // mongoose will give us the connection. No need for mongoConnect
 mongoose
@@ -68,7 +68,7 @@ mongoose
     })
     .catch(err => console.log(err));
 
-    app.listen(PORT);
+    // app.listen(PORT);
   })
   .catch(err => {
     console.log(err);
