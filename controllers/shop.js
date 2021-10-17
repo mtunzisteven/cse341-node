@@ -1,89 +1,123 @@
-const Cart = require('../models/cart');
 const Product = require('../models/product');
+const Order = require('../models/order');
 
 
-exports.getCart = (req, res, next) => {
-  Cart.fetchProducts(cart => {
-      Product.fetchAll(products => { // in fetchAll, products passed as empty variable(cb). It eventually is loaded with array of products
-          const cartProducts = [];
-
-          for(product of products){
-            const cartProductData = cart.products.find(prod => prod.id === product.id);
-
-            if(cartProductData ){
-              cartProducts.push({productData: product, qty: cartProductData.qty});
-           }
-          }
-          res.render('shop/cart', { // open cart page
-          products: cartProducts, // put products array into prods
-          pageTitle: 'Cart',  // the title of the ejs file to render
-          path: '/cart', // the path entered on url
-        });
+exports.getProducts = (req, res, next) => {
+  Product.find() // mongoose function
+    .then(products => {
+      res.render('shop/product-list', {
+        prods: products,
+        pageTitle: 'All Products',
+        path: '/products'
       });
+    })
+    .catch(err => {
+      console.log(err);
     });
-  };
-
-exports.postCart = (req, res, next) => {
-  const prodId = req.body.productId; // productId is named on routes
-  Product.fetchById(prodId, (product) => {
-
-    Cart.addProduct(prodId, product.price);
-
-  });
-  res.redirect("/");
-};
-
-exports.postDeleteCart = (req, res, next) => {
-  const prodId = req.body.productId; // productId is named on routes
-  Product.fetchById(prodId, (product) => {
-
-    Cart.deleteCartProductById(prodId, product.price);
-
-  });
-  res.redirect("/cart");
 };
 
 exports.getProduct = (req, res, next) => {
-    const prodId = req.params.productId; // productId is named on routes
-    Product.fetchById(prodId, product => { // cb is the arrow fn taking product as arg
-      res.render('shop/product-detail', { // open shop page
-        product: product, // get product obtained into product key
-        pageTitle: product.title,  // the title of the ejs file to render
-        path: '/products', // the path entered on url
-      });    
-    });
+  const prodId = req.params.productId;
+  Product.findById(prodId) // Mongoose function finds in db by id
+    .then(product => {
+      res.render('shop/product-detail', {
+        product: product,
+        pageTitle: product.title,
+        path: '/products'
+      });
+    })
+    .catch(err => console.log(err))
   };
 
-  exports.getProducts = (req, res, next) => {
-    Product.fetchAll(products => { // in fetchAll, products passed as empty variable(cb). It eventually is loaded with array of products
-      res.render('shop/product-list', { // open shop page
-      prods: products, // put products array into prods
-      pageTitle: "Shop",  // the title of the ejs file to render
-      path: '/products', // the path entered on url
+exports.getIndex = (req, res, next) => {
+    Product.find() // mongoose function
+    .then(products => {
+      res.render('shop/index', {
+        prods: products,
+        pageTitle: 'Shop',
+        path: '/'
+      });
+    })
+    .catch(err => {
+      console.log(err);
     });
-  });
-  };
+};
 
-  exports.getCheckout = (req, res, next) => {
-      res.render('shop/checkout', { // open checkout page
-      pageTitle: 'Checkout',  // the title of the ejs file to render
-      path: '/checkout', // the path entered on url
-    });
-  };
+exports.getCart = (req, res, next) => {
 
-  exports.getOrders = (req, res, next) => {
-    res.render('shop/orders', { // open orders page
-    pageTitle: 'Orders',  // the title of the ejs file to render
-    path: '/orders', // the path entered on url
-  });
-}; 
+  req.user
+    .populate('cart.items.product')
+    .then(user => {
+      const products = user.cart.items;
+      res.render('shop/cart', {
+        path: '/cart',
+        pageTitle: 'Your Cart',
+        products: products
+      });
+    })
+    .catch(err => console.log(err));
+};
 
-  exports.getIndex = (req, res, next) => {
-    Product.fetchAll(products => { // in fetchAll, products passed as empty variable(cb). It eventually is loaded with array of products
-      res.render('shop/index', { // open index page
-      prods: products, // put products array into prods
-      pageTitle: 'Home',  // the title of the ejs file to render
-      path: '/', // the path entered on url
-    });
+exports.postCart = (req, res, next) => {
+  const prodId = req.body.productId;
+  Product.findById(prodId)
+  .then(product=>{
+    return req.user.addToCart(product);
+  })
+  .then(result=>{
+    res.redirect('/cart');
   });
+};
+
+exports.postCartDeleteProduct = (req, res, next) => {
+  const prodId = req.body.productId;
+  req.user
+  .deleteCartItem(prodId)
+  .then(result => {
+    res.redirect('/cart');
+  })
+  .catch(err => console.log(err));
+};
+
+exports.postOrder = (req, res, next) => {
+  req.user
+    .populate('cart.items.product')
+    .then(user => {
+      const products = user.cart.items.map(i => {
+
+        // must map this to get products in object format below
+        // {...i.product._doc} will give the document for the respective id (product hold mongodb id)
+        return {quantity: i.quantity, product: {...i.product._doc}};
+
+      });
+      const order = new Order({
+        user: {
+          name: req.user.name,
+          userId: req.user
+        },
+        products: products
+      });
+
+      return order.save();
+
+    })
+  .then(result =>{
+    return req.user.clearCart();
+  })
+  .then(result =>{
+    res.redirect('/orders');
+  })
+  .catch(err => console.log(err));
+};
+
+exports.getOrders = (req, res, next) => {
+  Order.find({'user.userId': req.user._id})
+    .then(orders => {
+      res.render('shop/orders', {
+        path: '/orders',
+        pageTitle: 'Your Orders',
+        orders: orders
+      });
+    })
+    .catch(err => console.log(err));
 };
