@@ -3,6 +3,8 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cors = require('cors') 
+
 
 const errorController = require('./controllers/error');
 
@@ -19,22 +21,19 @@ const User = require('./models/user');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use((req, res, next) => {
-  User.findById('616b9dbf15b4a69e7d148a59')
-    .then(user => {
-      req.user = user;
-      next();
-    })
-    .catch(err => console.log(err));
-});
+// app.use((req, res, next) => {
+//   User.findById('616b9dbf15b4a69e7d148a59')
+//     .then(user => {
+//       req.user = user;
+//       next();
+//     })
+//     .catch(err => console.log(err));
+// });
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
 app.use(errorController.get404);
-
-
-const cors = require('cors') // Place this with other requires (like 'path' and 'express')
 
 const corsOptions = {
     origin: "https://aqueous-badlands-04319.herokuapp.com/",
@@ -61,6 +60,13 @@ mongoose
   .then(result => {
     
     // This should be your user handling code implement following the course videos
+    User.findById('616b9dbf15b4a69e7d148a59')
+    .then(user => {
+      req.user = user;
+      next();
+    })
+    .catch(err => console.log(err));
+
     app.listen(PORT);
   })
   .catch(err => {
