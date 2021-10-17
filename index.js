@@ -21,14 +21,14 @@ const User = require('./models/user');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use((req, res, next) => {
-//   User.findById('616b9dbf15b4a69e7d148a59')
-//     .then(user => {
-//       req.user = user;
-//       next();
-//     })
-//     .catch(err => console.log(err));
-// });
+app.use((req, res, next) => {
+  User.findById('616b9dbf15b4a69e7d148a59')
+    .then(user => {
+      req.user = user;
+      next();
+    })
+    .catch(err => console.log(err));
+});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -44,14 +44,14 @@ app.use(cors(corsOptions));
 const options = {
     useUnifiedTopology: true,
     useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
+    // useCreateIndex: true,
+    // useFindAndModify: false,
     family: 4
 };
 
 const MONGODB_URL = process.env.MONGODB_URL || "mongodb+srv://mtunzi:MongoDBJune2021.@firstcluster21.ik5m1.mongodb.net/shop?retryWrites=true&w=majority";
                
-// const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 // mongoose will give us the connection. No need for mongoConnect
 mongoose
@@ -61,14 +61,27 @@ mongoose
   .then(result => {
     
     // This should be your user handling code implement following the course videos
-    User.findById('616b9dbf15b4a69e7d148a59')
+    User.findOne() // MOngoose fn finds user in users db
     .then(user => {
-      req.user = user;
-      next();
-    })
-    .catch(err => console.log(err));
 
-    // app.listen(PORT);
+      // only create a user if there's none found
+      if(!user){
+        // call user at start of server
+        const user = new User({
+          name: 'Mtunzi',
+          email: 'st.vuma@gmail.com',
+          cart: {
+            items: []
+          }
+        });
+
+        // save user in db using mongoose save() fn
+        user.save();
+    
+      }
+    })
+
+    app.listen(PORT);
   })
   .catch(err => {
     console.log(err);

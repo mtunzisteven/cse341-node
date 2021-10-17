@@ -97,7 +97,6 @@ exports.getProducts = (req, res, next) => {
 
     Product.find() // mongoose function returns products from db
     .then(products => {
-        console.log(products);
         res.render('admin/products', {
             prods: products,
             pageTitle: 'Admin Products',
