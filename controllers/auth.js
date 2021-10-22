@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 
-// include sendiblue email package--------------------------------------------------------------------------------------||
-// var SibApiV3Sdk = require('sib-api-v3-sdk');
+// include NYLAS email manager package-----------------------------------------------------------------------------------||
+// const Nylas = require('nylas');
 
 // enter my api key
 // SibApiV3Sdk.ApiClient.instance.authentications['api-key'].apiKey = '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'; 

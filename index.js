@@ -14,11 +14,16 @@ const errorController = require('./controllers/error');  // import error control
 
 const app = express(); // instantiate express middleware manager app
 
+
+const MONGODB_URL = process.env.MONGODB_URL || process.env.MONGODB_URI;
+               
+const PORT = process.env.PORT || 3000;
+
 // initialize session storage
 // store used to store sessions in the db 
 // using constructor fn returned to sessionDBStorage constant above
 const store = new sessionDBStorage({
-  uri: process.env.MONGODB_URI, // the url to the db connection
+  uri: MONGODB_URL, // the url to the db connection
   collection: 'sessions' // the collection created to store sessions in the db
 });
 
@@ -96,14 +101,11 @@ app.use(cors(corsOptions));
 const options = {
     useUnifiedTopology: true,
     useNewUrlParser: true,
-    // useCreateIndex: true,
-    // useFindAndModify: false, 
+    useCreateIndex: true,
+    useFindAndModify: false, 
     family: 4
 };
 
-const MONGODB_URL = process.env.MONGODB_URL || process.env.MONGODB_URI;
-               
-const PORT = process.env.PORT || 3000;
 
 // mongoose will give us the connection. No need for mongoConnect
 mongoose
