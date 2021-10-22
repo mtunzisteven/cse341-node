@@ -8,11 +8,9 @@ const session = require('express-session'); // import session  manager
 const sessionDBStorage = require('connect-mongodb-session')(session); // function returned instead of the usual object
 const csrf = require('csurf'); // import csrf token manager 
 const flash = require('connect-flash'); // import session flash message manager 
+require('dotenv').config();
 
 const errorController = require('./controllers/error');  // import error controller
-
-// mongodb connection URI
-const MONGODB_URI = 'mongodb+srv://mtunzi:MongoDBJune2021.@firstcluster21.ik5m1.mongodb.net/shop';
 
 const app = express(); // instantiate express middleware manager app
 
@@ -20,7 +18,7 @@ const app = express(); // instantiate express middleware manager app
 // store used to store sessions in the db 
 // using constructor fn returned to sessionDBStorage constant above
 const store = new sessionDBStorage({
-  uri: MONGODB_URI, // the url to the db connection
+  uri: process.env.MONGODB_URI, // the url to the db connection
   collection: 'sessions' // the collection created to store sessions in the db
 });
 
@@ -99,11 +97,11 @@ const options = {
     useUnifiedTopology: true,
     useNewUrlParser: true,
     // useCreateIndex: true,
-    // useFindAndModify: false,
+    // useFindAndModify: false, 
     family: 4
 };
 
-const MONGODB_URL = process.env.MONGODB_URL || MONGODB_URI;
+const MONGODB_URL = process.env.MONGODB_URL || process.env.MONGODB_URI;
                
 const PORT = process.env.PORT || 3000;
 

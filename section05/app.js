@@ -10,7 +10,11 @@ const flash = require('connect-flash'); // import session flash message manager 
 
 const errorController = require('./controllers/error');
 
-const MONGODB_URI = 'mongodb+srv://mtunzi:MongoDBJune2021.@firstcluster21.ik5m1.mongodb.net/shop';
+// MongoDB URL
+const MONGODB_URL = process.env.MONGODB_URL;
+
+// server port           
+const PORT = process.env.PORT || 3000;
 
 const app = express(); 
 
@@ -18,7 +22,7 @@ const app = express();
 // store used to store sessions in the db 
 // using constructor fn returned to sessionDBStorage constant above
 const store = new sessionDBStorage({
-  uri: MONGODB_URI, // the url to the db connection
+  uri: MONGODB_URL, // the url to the db connection
   collection: 'sessions' // the collection created to store sessions in the db
 });
 
@@ -89,10 +93,10 @@ app.use(errorController.get404);
 
 // mongoose will give us the connection. No need for mongoConnect
 mongoose
-  .connect(MONGODB_URI) //connected to shop db in firstcluster21 of db user mtunzi with specified password "MongoDBJune2021."
+  .connect(MONGODB_URL) //connected to shop db in firstcluster21 of db user mtunzi with specified password "MongoDBJune2021."
   .then(result => {
     // start server at localhost:3000
-    app.listen(3000);
+    app.listen(PORT);
   })
   .catch(err => {
     console.log(err);
